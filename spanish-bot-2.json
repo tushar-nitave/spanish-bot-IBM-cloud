@@ -1,1 +1,388 @@
-[{"id":"b43d161b.66af28","type":"tab","label":"Flow 3","disabled":false,"info":""},{"id":"70324129.2da83","type":"function","z":"b43d161b.66af28","name":"Prepare text","func":"var chatID = msg.chatId.toString();\nvar lang = global.get(chatID) || 0;\n\nmsg.payload = msg.transcription;\n\n  \nif (lang === 0){\n    \nif (count === 0 && msg.payload === \"/start\" ||msg.payload === \"يا ترجمات \" || msg.payload === \"مرحبا \" ||msg.payload === \"ترجمات \"){\n\n    global.set(chatID,1);\n    msg.payloadtrans = \"Done1\";\n    return [msg,null,null,null,null,null,null];\n    \n}\nelse if ( msg.payload === \"Hey Watson \"|| msg.payload === \"Hello \"|| msg.payload === \"hello \"|| msg.payload === \"hello\"){\n\n    global.set(chatID,2);\n    msg.payloadtrans = \"Done2\";\n\n    return [null,msg,null,null,null,null,null];\n}\nelse if (count === 0 && msg.payload === 'Hola'|| msg.payload === 'Hola '||msg.payload === 'hola'){\n    global.set(chatID,3);\n    msg.payloadtrans = \"Done3\";\n\n    return [null,null,msg,null,null,null,null];\n}\nelse if (count === 0 && msg.payload === 'Bonjour' ||msg.payload === \"bon jour\" || msg.payload ===\"bonjour \" ){\n    global.set(chatID,4);\n    msg.payloadtrans = \"Done4\";\n\n    return [null,null,null,msg,null,null,null];\n    \n}\nelse if (count === 0 && msg.payload == \"こんにちは\" || msg.payload == \"ありがとう\"){\n    global.set(chatID,5);\n    msg.payloadtrans = \"Done5\";\n    \n    return [null,null,null,null,msg,null,null];\n    \n}\nelse if (count === 0 && msg.payload == \"hallo\" || msg.payload == \"Hallo\"){\n    global.set(chatID,6);\n    msg.payloadtrans = \"Done6\";\n    \n    return [null,null,null,null,null,msg,null];\n    \n}else{\n    \n    var countError = global.get('countError',chatID) || 0;\n    var countType = global.get('countType',chatID) || 0;\n    countError++;\n    global.set('countError',countError,chatID);\n    \n    if (countError === 6||countType === 1){\n        \n        msg.payload = \"Sorry I couldn't understand you. could you please repeat again\";\n    return [null,null,null,null,null,null,msg];\n    }\n    \n}\n}else if (lang > 6){\n    \n    msg.payload = \"Sorry I couldn't understand you. Could you please repeat again\";\n\n    return [null,null,null,null,null,null,msg];\n    \n}else{\n    \n       \n    \n    if (lang === 1){\n return [msg,null,null,null,null,null,null]\n}else if (lang === 2){\n return [null,msg,null,null,null,null,null]\n}else if (lang === 3){\n return [null,null,msg,null,null,null,null]\n}else if (lang === 4){\n return [null,null,null,msg,null,null,null]\n}else if (lang === 5){\n return [null,null,null,null,msg,null,null]\n}else if (lang === 6){\n return [null,null,null,null,null,msg,null]\n}\n}\n    \n\n\n","outputs":7,"noerr":0,"initialize":"","finalize":"","x":754,"y":704,"wires":[[],["cceffec1.eeabb"],["f5d2f447.be15c"],[],[],[],["1f07694.ddfdb17","d43296ee.bda518"]]},{"id":"cceffec1.eeabb","type":"watson-translator","z":"b43d161b.66af28","name":"English to Spanish Translation","action":"translate","basemodel":"en-nl","domain":"general","srclang":"en","destlang":"es","password":"J2jCwXsxFGCR","apikey":"8zKtUJMDgaPsu4lkbhJZDVWfP_N4DSNl6P_oLK8iKp03","custom":"","domainhidden":"general","srclanghidden":"en","destlanghidden":"es","basemodelhidden":"en-nl","customhidden":"","filetype":"forcedglossary","trainid":"","lgparams2":true,"service-endpoint":"https://api.us-south.language-translator.watson.cloud.ibm.com/instances/fff1ef80-d764-474c-a090-791b60f41464","x":1050,"y":660,"wires":[["1f07694.ddfdb17"]]},{"id":"f5d2f447.be15c","type":"watson-translator","z":"b43d161b.66af28","name":"Spanish Translation","action":"translate","basemodel":"en-nl","domain":"general","srclang":"es","destlang":"en","password":"J2jCwXsxFGCR","apikey":"8zKtUJMDgaPsu4lkbhJZDVWfP_N4DSNl6P_oLK8iKp03","custom":"","domainhidden":"general","srclanghidden":"es","destlanghidden":"en","basemodelhidden":"en-nl","customhidden":"","filetype":"forcedglossary","trainid":"","lgparams2":true,"service-endpoint":"https://api.us-south.language-translator.watson.cloud.ibm.com/instances/fff1ef80-d764-474c-a090-791b60f41464","x":1049.5000381469727,"y":820.2500152587891,"wires":[["1f07694.ddfdb17"]]},{"id":"c705a24.670c16","type":"link in","z":"b43d161b.66af28","name":"Text_to_Translate","links":["adf111cd.9cf6c8","41b16c10.274174","a3bafb66.abf318","b68bd01e.f67bb","22e8db7e.59c7a4","dd601983.ec6fc8","3c9e5b0f.13b97c"],"x":632,"y":693,"wires":[["70324129.2da83","9e1ce0f6.3bd5f8"]]},{"id":"fd1904d5.2e66c","type":"link out","z":"b43d161b.66af28","name":"Translated","links":["1a2e4736.e78529","a0efee6e.f7b07","5ceadb2c.d82074"],"x":1735,"y":760,"wires":[]},{"id":"1f07694.ddfdb17","type":"function","z":"b43d161b.66af28","name":"Check Message ID","func":"if (!isNaN(msg.chatId)){\n    return msg;\n}else{\n    var chatID = global.get('chatID',msg.payload.chatId.toString()) || 520109971;\n    msg.chatId = chatID;\n    return msg;\n}\n","outputs":1,"noerr":0,"initialize":"","finalize":"","x":1608.0000457763672,"y":759.0000076293945,"wires":[["fd1904d5.2e66c"]]},{"id":"9e1ce0f6.3bd5f8","type":"debug","z":"b43d161b.66af28","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","targetType":"full","statusVal":"","statusType":"auto","x":731,"y":617,"wires":[]},{"id":"558738c0.450928","type":"telegram receiver","z":"b43d161b.66af28","name":"","bot":"29be706d.c0a268","saveDataDir":"","filterCommands":false,"x":249.25000762939453,"y":1095.25004196167,"wires":[["8045f0b2.86f138"],[]]},{"id":"33aefa74.22cfde","type":"telegram sender","z":"b43d161b.66af28","name":"","bot":"29be706d.c0a268","x":1210,"y":1100,"wires":[[]]},{"id":"8045f0b2.86f138","type":"function","z":"b43d161b.66af28","name":"Check Message","func":"\nmsg.chatId= msg.payload.chatId;\nif (msg.payload.type === \"voice\"){\n        return [null, msg,null];\n}else{\n\nmsg.payload = msg.payload.content;\nmsg.transcription  = msg.payload;\nnode.warn(msg.payload);\nif (msg.payload == \"/start\"){\n    msg.payload = \"¡Hola!\\n\\nI'm, your personal spanish companion. I can translate your words and senteces from Spanish to English and vice versa.\";\n    return [null, null, msg];\n}\nelse if (msg.payload === \"RestLang\"|| msg.payload === \"/start\" ){\n    global.set(msg.chatId,0);\n    msg.payloadtran= \"test1\";\n    msg.payload = \"Hola, I am your personal spanish assistant.\";\n    return [null, null, msg];\n}else{\nreturn [msg,null,null];\n}\n}","outputs":3,"noerr":0,"initialize":"","finalize":"","x":461.25000762939453,"y":1099.25004196167,"wires":[["84eb6c5d.3df408"],["a6f6515e.a7c51"],["2bc71f4e.8933d8","d0db1ef4.99d2e"]]},{"id":"14733269.8dbe9e","type":"function","z":"b43d161b.66af28","name":"Prepare Mesaage","func":"msg.payload = {\n    chatId : msg.chatId,\n    type : \"message\",\n    content : msg.payload\n    \n};\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","x":974.5000228881836,"y":1105.25004196167,"wires":[["33aefa74.22cfde"]]},{"id":"3c9e5b0f.13b97c","type":"link out","z":"b43d161b.66af28","name":"Telegram_Receiver","links":["c705a24.670c16"],"x":657.2500076293945,"y":1042.25004196167,"wires":[]},{"id":"5ceadb2c.d82074","type":"link in","z":"b43d161b.66af28","name":"Telegram_Sender","links":["fd1904d5.2e66c","2bc71f4e.8933d8"],"x":842.5000228881836,"y":1117.25004196167,"wires":[["14733269.8dbe9e"]]},{"id":"a6f6515e.a7c51","type":"link out","z":"b43d161b.66af28","name":"Telegram_Voice_Receiver","links":["1a1931c5.ec13de","9f94d137.f45a7","9f58b470.8fad68","766387ef.c9d3c8"],"x":657.2500076293945,"y":1080.25004196167,"wires":[]},{"id":"84eb6c5d.3df408","type":"watson-language-translator-identify","z":"b43d161b.66af28","name":"","service-endpoint":"https://api.us-south.language-translator.watson.cloud.ibm.com/instances/fff1ef80-d764-474c-a090-791b60f41464","x":259.25000762939453,"y":1044.25004196167,"wires":[["d810c5b9.085318"]]},{"id":"2bc71f4e.8933d8","type":"link out","z":"b43d161b.66af28","name":"","links":["5ceadb2c.d82074"],"x":657.2500076293945,"y":1120.25004196167,"wires":[]},{"id":"d810c5b9.085318","type":"function","z":"b43d161b.66af28","name":"Set Language","func":"var chatID = msg.chatId.toString();\n\nmsg.transcription  = msg.payload;\n\n if (msg.lang.language === \"ar\"){\n    global.set(chatID,1);\n\n return msg;\n}else if (msg.lang.language === \"en\"){\n    \n    global.set(chatID,2);\n\n return msg;\n}else if (msg.lang.language === \"es\"){\n    \n    global.set(chatID,3);\n\n return msg;\n}else if (msg.lang.language === \"fr\"){\n    \n    global.set(chatID,4);\n\n return msg;\n}else if (msg.lang.language === \"ja\"){\n    \n    global.set(chatID,5);\n\n return msg;\n}else if (msg.lang.language === \"de\"){\n    \n    global.set(chatID,6);\n\n return msg;\n}","outputs":1,"noerr":0,"initialize":"","finalize":"","x":461.25000762939453,"y":1042.25004196167,"wires":[["3c9e5b0f.13b97c"]]},{"id":"d43296ee.bda518","type":"debug","z":"b43d161b.66af28","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","targetType":"full","statusVal":"","statusType":"auto","x":732,"y":781,"wires":[]},{"id":"d0db1ef4.99d2e","type":"debug","z":"b43d161b.66af28","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","targetType":"full","statusVal":"","statusType":"auto","x":620,"y":1200,"wires":[]},{"id":"29be706d.c0a268","type":"telegram bot","z":"","botname":"nitave_bot","usernames":"","chatids":"","baseapiurl":"","updatemode":"polling","pollinterval":"300","usesocks":false,"sockshost":"","socksport":"6667","socksusername":"anonymous","sockspassword":"","bothost":"","localbotport":"8443","publicbotport":"8443","privatekey":"","certificate":"","useselfsignedcertificate":false,"sslterminated":false,"verboselogging":false}]
+[
+    {
+        "id": "b43d161b.66af28",
+        "type": "tab",
+        "label": "Flow 3",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "70324129.2da83",
+        "type": "function",
+        "z": "b43d161b.66af28",
+        "name": "Prepare text",
+        "func": "var chatID = msg.chatId.toString();\nvar lang = global.get(chatID) || 0;\n\nmsg.payload = msg.transcription;\n\n  \nif (lang === 0){\n    \nif (count === 0 && msg.payload === \"/start\" ||msg.payload === \"يا ترجمات \" || msg.payload === \"مرحبا \" ||msg.payload === \"ترجمات \"){\n\n    global.set(chatID,1);\n    msg.payloadtrans = \"Done1\";\n    return [msg,null,null,null,null,null,null];\n    \n}\nelse if ( msg.payload === \"Hey Watson \"|| msg.payload === \"Hello \"|| msg.payload === \"hello \"|| msg.payload === \"hello\"){\n\n    global.set(chatID,2);\n    msg.payloadtrans = \"Done2\";\n\n    return [null,msg,null,null,null,null,null];\n}\nelse if (count === 0 && msg.payload === 'Hola'|| msg.payload === 'Hola '||msg.payload === 'hola'){\n    global.set(chatID,3);\n    msg.payloadtrans = \"Done3\";\n\n    return [null,null,msg,null,null,null,null];\n}\nelse if (count === 0 && msg.payload === 'Bonjour' ||msg.payload === \"bon jour\" || msg.payload ===\"bonjour \" ){\n    global.set(chatID,4);\n    msg.payloadtrans = \"Done4\";\n\n    return [null,null,null,msg,null,null,null];\n    \n}\nelse if (count === 0 && msg.payload == \"こんにちは\" || msg.payload == \"ありがとう\"){\n    global.set(chatID,5);\n    msg.payloadtrans = \"Done5\";\n    \n    return [null,null,null,null,msg,null,null];\n    \n}\nelse if (count === 0 && msg.payload == \"hallo\" || msg.payload == \"Hallo\"){\n    global.set(chatID,6);\n    msg.payloadtrans = \"Done6\";\n    \n    return [null,null,null,null,null,msg,null];\n    \n}else{\n    \n    var countError = global.get('countError',chatID) || 0;\n    var countType = global.get('countType',chatID) || 0;\n    countError++;\n    global.set('countError',countError,chatID);\n    \n    if (countError === 6||countType === 1){\n        \n        msg.payload = \"Sorry I couldn't understand you. could you please repeat again\";\n    return [null,null,null,null,null,null,msg];\n    }\n    \n}\n}else if (lang > 6){\n    \n    msg.payload = \"Sorry I couldn't understand you. Could you please repeat again\";\n\n    return [null,null,null,null,null,null,msg];\n    \n}else{\n    \n       \n    \n    if (lang === 1){\n return [msg,null,null,null,null,null,null]\n}else if (lang === 2){\n return [null,msg,null,null,null,null,null]\n}else if (lang === 3){\n return [null,null,msg,null,null,null,null]\n}else if (lang === 4){\n return [null,null,null,msg,null,null,null]\n}else if (lang === 5){\n return [null,null,null,null,msg,null,null]\n}else if (lang === 6){\n return [null,null,null,null,null,msg,null]\n}\n}\n    \n\n\n",
+        "outputs": 7,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 754,
+        "y": 704,
+        "wires": [
+            [],
+            [
+                "cceffec1.eeabb"
+            ],
+            [
+                "f5d2f447.be15c"
+            ],
+            [],
+            [],
+            [],
+            [
+                "1f07694.ddfdb17",
+                "d43296ee.bda518"
+            ]
+        ]
+    },
+    {
+        "id": "cceffec1.eeabb",
+        "type": "watson-translator",
+        "z": "b43d161b.66af28",
+        "name": "English to Spanish Translation",
+        "action": "translate",
+        "basemodel": "en-nl",
+        "domain": "general",
+        "srclang": "en",
+        "destlang": "es",
+        "password": "",
+        "apikey": "",
+        "custom": "",
+        "domainhidden": "general",
+        "srclanghidden": "en",
+        "destlanghidden": "es",
+        "basemodelhidden": "en-nl",
+        "customhidden": "",
+        "filetype": "forcedglossary",
+        "trainid": "",
+        "lgparams2": true,
+        "service-endpoint": "",
+        "x": 1050,
+        "y": 660,
+        "wires": [
+            [
+                "1f07694.ddfdb17"
+            ]
+        ]
+    },
+    {
+        "id": "f5d2f447.be15c",
+        "type": "watson-translator",
+        "z": "b43d161b.66af28",
+        "name": "Spanish Translation",
+        "action": "translate",
+        "basemodel": "en-nl",
+        "domain": "general",
+        "srclang": "es",
+        "destlang": "en",
+        "password": "",
+        "apikey": "",
+        "custom": "",
+        "domainhidden": "general",
+        "srclanghidden": "es",
+        "destlanghidden": "en",
+        "basemodelhidden": "en-nl",
+        "customhidden": "",
+        "filetype": "forcedglossary",
+        "trainid": "",
+        "lgparams2": true,
+        "service-endpoint": "",
+        "x": 1049.5000381469727,
+        "y": 820.2500152587891,
+        "wires": [
+            [
+                "1f07694.ddfdb17"
+            ]
+        ]
+    },
+    {
+        "id": "c705a24.670c16",
+        "type": "link in",
+        "z": "b43d161b.66af28",
+        "name": "Text_to_Translate",
+        "links": [
+            "adf111cd.9cf6c8",
+            "41b16c10.274174",
+            "a3bafb66.abf318",
+            "b68bd01e.f67bb",
+            "22e8db7e.59c7a4",
+            "dd601983.ec6fc8",
+            "3c9e5b0f.13b97c"
+        ],
+        "x": 632,
+        "y": 693,
+        "wires": [
+            [
+                "70324129.2da83",
+                "9e1ce0f6.3bd5f8"
+            ]
+        ]
+    },
+    {
+        "id": "fd1904d5.2e66c",
+        "type": "link out",
+        "z": "b43d161b.66af28",
+        "name": "Translated",
+        "links": [
+            "1a2e4736.e78529",
+            "a0efee6e.f7b07",
+            "5ceadb2c.d82074"
+        ],
+        "x": 1735,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "1f07694.ddfdb17",
+        "type": "function",
+        "z": "b43d161b.66af28",
+        "name": "Check Message ID",
+        "func": "if (!isNaN(msg.chatId)){\n    return msg;\n}else{\n    var chatID = global.get('chatID',msg.payload.chatId.toString()) || 520109971;\n    msg.chatId = chatID;\n    return msg;\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 1608.0000457763672,
+        "y": 759.0000076293945,
+        "wires": [
+            [
+                "fd1904d5.2e66c"
+            ]
+        ]
+    },
+    {
+        "id": "9e1ce0f6.3bd5f8",
+        "type": "debug",
+        "z": "b43d161b.66af28",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 731,
+        "y": 617,
+        "wires": []
+    },
+    {
+        "id": "558738c0.450928",
+        "type": "telegram receiver",
+        "z": "b43d161b.66af28",
+        "name": "",
+        "bot": "29be706d.c0a268",
+        "saveDataDir": "",
+        "filterCommands": false,
+        "x": 249.25000762939453,
+        "y": 1095.25004196167,
+        "wires": [
+            [
+                "8045f0b2.86f138"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "33aefa74.22cfde",
+        "type": "telegram sender",
+        "z": "b43d161b.66af28",
+        "name": "",
+        "bot": "29be706d.c0a268",
+        "x": 1210,
+        "y": 1100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8045f0b2.86f138",
+        "type": "function",
+        "z": "b43d161b.66af28",
+        "name": "Check Message",
+        "func": "\nmsg.chatId= msg.payload.chatId;\nif (msg.payload.type === \"voice\"){\n        return [null, msg,null];\n}else{\n\nmsg.payload = msg.payload.content;\nmsg.transcription  = msg.payload;\nnode.warn(msg.payload);\nif (msg.payload == \"/start\"){\n    msg.payload = \"¡Hola!\\n\\nI'm, your personal spanish companion. I can translate your words and senteces from Spanish to English and vice versa.\";\n    return [null, null, msg];\n}\nelse if (msg.payload === \"RestLang\"|| msg.payload === \"/start\" ){\n    global.set(msg.chatId,0);\n    msg.payloadtran= \"test1\";\n    msg.payload = \"Hola, I am your personal spanish assistant.\";\n    return [null, null, msg];\n}else{\nreturn [msg,null,null];\n}\n}",
+        "outputs": 3,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 461.25000762939453,
+        "y": 1099.25004196167,
+        "wires": [
+            [
+                "84eb6c5d.3df408"
+            ],
+            [
+                "a6f6515e.a7c51"
+            ],
+            [
+                "2bc71f4e.8933d8",
+                "d0db1ef4.99d2e"
+            ]
+        ]
+    },
+    {
+        "id": "14733269.8dbe9e",
+        "type": "function",
+        "z": "b43d161b.66af28",
+        "name": "Prepare Mesaage",
+        "func": "msg.payload = {\n    chatId : msg.chatId,\n    type : \"message\",\n    content : msg.payload\n    \n};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 974.5000228881836,
+        "y": 1105.25004196167,
+        "wires": [
+            [
+                "33aefa74.22cfde"
+            ]
+        ]
+    },
+    {
+        "id": "3c9e5b0f.13b97c",
+        "type": "link out",
+        "z": "b43d161b.66af28",
+        "name": "Telegram_Receiver",
+        "links": [
+            "c705a24.670c16"
+        ],
+        "x": 657.2500076293945,
+        "y": 1042.25004196167,
+        "wires": []
+    },
+    {
+        "id": "5ceadb2c.d82074",
+        "type": "link in",
+        "z": "b43d161b.66af28",
+        "name": "Telegram_Sender",
+        "links": [
+            "fd1904d5.2e66c",
+            "2bc71f4e.8933d8"
+        ],
+        "x": 842.5000228881836,
+        "y": 1117.25004196167,
+        "wires": [
+            [
+                "14733269.8dbe9e"
+            ]
+        ]
+    },
+    {
+        "id": "a6f6515e.a7c51",
+        "type": "link out",
+        "z": "b43d161b.66af28",
+        "name": "Telegram_Voice_Receiver",
+        "links": [
+            "1a1931c5.ec13de",
+            "9f94d137.f45a7",
+            "9f58b470.8fad68",
+            "766387ef.c9d3c8"
+        ],
+        "x": 657.2500076293945,
+        "y": 1080.25004196167,
+        "wires": []
+    },
+    {
+        "id": "84eb6c5d.3df408",
+        "type": "watson-language-translator-identify",
+        "z": "b43d161b.66af28",
+        "name": "",
+        "service-endpoint": "https://api.us-south.language-translator.watson.cloud.ibm.com/instances/fff1ef80-d764-474c-a090-791b60f41464",
+        "x": 259.25000762939453,
+        "y": 1044.25004196167,
+        "wires": [
+            [
+                "d810c5b9.085318"
+            ]
+        ]
+    },
+    {
+        "id": "2bc71f4e.8933d8",
+        "type": "link out",
+        "z": "b43d161b.66af28",
+        "name": "",
+        "links": [
+            "5ceadb2c.d82074"
+        ],
+        "x": 657.2500076293945,
+        "y": 1120.25004196167,
+        "wires": []
+    },
+    {
+        "id": "d810c5b9.085318",
+        "type": "function",
+        "z": "b43d161b.66af28",
+        "name": "Set Language",
+        "func": "var chatID = msg.chatId.toString();\n\nmsg.transcription  = msg.payload;\n\n if (msg.lang.language === \"ar\"){\n    global.set(chatID,1);\n\n return msg;\n}else if (msg.lang.language === \"en\"){\n    \n    global.set(chatID,2);\n\n return msg;\n}else if (msg.lang.language === \"es\"){\n    \n    global.set(chatID,3);\n\n return msg;\n}else if (msg.lang.language === \"fr\"){\n    \n    global.set(chatID,4);\n\n return msg;\n}else if (msg.lang.language === \"ja\"){\n    \n    global.set(chatID,5);\n\n return msg;\n}else if (msg.lang.language === \"de\"){\n    \n    global.set(chatID,6);\n\n return msg;\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 461.25000762939453,
+        "y": 1042.25004196167,
+        "wires": [
+            [
+                "3c9e5b0f.13b97c"
+            ]
+        ]
+    },
+    {
+        "id": "d43296ee.bda518",
+        "type": "debug",
+        "z": "b43d161b.66af28",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 732,
+        "y": 781,
+        "wires": []
+    },
+    {
+        "id": "d0db1ef4.99d2e",
+        "type": "debug",
+        "z": "b43d161b.66af28",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 620,
+        "y": 1200,
+        "wires": []
+    },
+    {
+        "id": "29be706d.c0a268",
+        "type": "telegram bot",
+        "z": "",
+        "botname": "nitave_bot",
+        "usernames": "",
+        "chatids": "",
+        "baseapiurl": "",
+        "updatemode": "polling",
+        "pollinterval": "300",
+        "usesocks": false,
+        "sockshost": "",
+        "socksport": "6667",
+        "socksusername": "anonymous",
+        "sockspassword": "",
+        "bothost": "",
+        "localbotport": "8443",
+        "publicbotport": "8443",
+        "privatekey": "",
+        "certificate": "",
+        "useselfsignedcertificate": false,
+        "sslterminated": false,
+        "verboselogging": false
+    }
+]
